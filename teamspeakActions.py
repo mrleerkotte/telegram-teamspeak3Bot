@@ -25,14 +25,11 @@ class teamspeakActions:
 
             teamspeakClients = "*Online Clients*\n"
 
-            if resp > 0:
-                for client in resp.parsed:
-                    if client['client_type'] == '0':
-                        teamspeakClients = teamspeakClients + "_" + client['client_nickname'] + "_\n"
+            for client in resp.parsed:
+                if client['client_type'] == '0':
+                    teamspeakClients = teamspeakClients + "_" + client['client_nickname'] + "_\n"
 
-                return teamspeakClients
-            else:
-                return "No one online."
+            return teamspeakClients
 
     def getBanlist(TEAMSPEAK_QUERY_USER, TEAMSPEAK_QUERY_PASS, TEAMSPEAK_QUERY_SERVER):
         with ts3.query.TS3Connection(TEAMSPEAK_QUERY_SERVER) as ts3conn:
