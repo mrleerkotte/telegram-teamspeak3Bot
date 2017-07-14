@@ -1,7 +1,7 @@
 [Telegram]
-TELEGRAM_API_TOKEN = <token>
+telegram_api_token = <token>
 
 [Teamspeak]
-TEAMSPEAK_QUERY_USER = <user>
-TEAMSPEAK_QUERY_PASS = <pass>
-TEAMSPEAK_QUERY_SERVER = <server>
+teamspeak_query_user = <user>
+teamspeak_query_pass = <pass>
+teamspeak_query_server = <server>
