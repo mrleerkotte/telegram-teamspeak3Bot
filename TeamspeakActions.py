@@ -1,15 +1,16 @@
 import ts3
 
 
-class teamspeakActions:
-    def getClients(TEAMSPEAK_QUERY_USER, TEAMSPEAK_QUERY_PASS, TEAMSPEAK_QUERY_SERVER):
-        with ts3.query.TS3Connection(TEAMSPEAK_QUERY_SERVER) as ts3conn:
+class TeamspeakActions:
+    @staticmethod
+    def get_clients(teamspeak_query_user, teamspeak_query_pass, teamspeak_query_server):
+        with ts3.query.TS3Connection(teamspeak_query_server) as ts3conn:
             # Note, that the client will wait for the response and raise a
             # **TS3QueryError** if the error id of the response is not 0.
             try:
                 ts3conn.login(
-                    client_login_name=TEAMSPEAK_QUERY_USER,
-                    client_login_password=TEAMSPEAK_QUERY_PASS
+                    client_login_name=teamspeak_query_user,
+                    client_login_password=teamspeak_query_pass
                 )
             except ts3.query.TS3QueryError as err:
                 print("Login failed:", err.resp.error["msg"])
@@ -23,22 +24,27 @@ class teamspeakActions:
             # print("Clients on the server:", resp.parsed)
             # print("Error:", resp.error["id"], resp.error["msg"])
 
-            teamspeakClients = "*Online Clients*\n"
+            teamspeak_clients = ""
 
             for client in resp.parsed:
                 if client['client_type'] == '0':
-                    teamspeakClients = teamspeakClients + "_" + client['client_nickname'] + "_\n"
+                    teamspeak_clients = teamspeak_clients + "_" + client['client_nickname'] + "_\n"
 
-            return teamspeakClients
+            if teamspeak_clients == "":
+                teamspeak_clients = "*No one online.\n*"
+                return teamspeak_clients
+            else:
+                return teamspeak_clients
 
-    def getBanlist(TEAMSPEAK_QUERY_USER, TEAMSPEAK_QUERY_PASS, TEAMSPEAK_QUERY_SERVER):
-        with ts3.query.TS3Connection(TEAMSPEAK_QUERY_SERVER) as ts3conn:
+    @staticmethod
+    def get_bans(teamspeak_query_user, teamspeak_query_pass, teamspeak_query_server):
+        with ts3.query.TS3Connection(teamspeak_query_server) as ts3conn:
             # Note, that the client will wait for the response and raise a
             # **TS3QueryError** if the error id of the response is not 0.
             try:
                 ts3conn.login(
-                    client_login_name=TEAMSPEAK_QUERY_USER,
-                    client_login_password=TEAMSPEAK_QUERY_PASS
+                    client_login_name=teamspeak_query_user,
+                    client_login_password=teamspeak_query_pass
                 )
             except ts3.query.TS3QueryError as err:
                 print("Login failed:", err.resp.error["msg"])
@@ -50,17 +56,17 @@ class teamspeakActions:
             # with the response.
             try:
                 resp = ts3conn.banlist()
-                teamspeakBanlist = "*Banned Clients*\n"
+                teamspeak_bans = "*Banned Clients*\n"
 
                 for ban in resp.parsed:
                     ip = ban['ip']
                     ip = ip.translate({ord(c): None for c in '\\'})
 
-                    teamspeakBanlist = teamspeakBanlist + "_Name: " + ban['name'] + " IP: " + ip + \
+                    teamspeak_bans = teamspeak_bans + "_Name: " + ban['name'] + " IP: " + ip + \
                                        " By: " + ban['invokername'] + " Reason: " + ban['reason'] + "_\n"
 
-                response = teamspeakBanlist
+                response = teamspeak_bans
             except ts3.query.TS3QueryError as err:
-                response = "No active bans."
+                response = "*No active bans.*\n"
 
             return response

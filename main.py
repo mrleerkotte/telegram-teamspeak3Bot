@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import configparser
+import logging
+import re
 from uuid import uuid4
 
-import re
-import configparser
-from teamspeakActions import teamspeakActions
 from telegram import InlineQueryResultArticle, ParseMode, \
     InputTextMessageContent
 from telegram.ext import Updater, InlineQueryHandler, CommandHandler
-import logging
+
+from TeamspeakActions import TeamspeakActions
 
 config = configparser.ConfigParser()
 config.sections()
 
 config.read('teamspeakBot.conf')
 
-TELEGRAM_API_TOKEN = config['Telegram']['TELEGRAM_API_TOKEN']
-TEAMSPEAK_QUERY_USER = config['Teamspeak']['TEAMSPEAK_QUERY_USER']
-TEAMSPEAK_QUERY_PASS = config['Teamspeak']['TEAMSPEAK_QUERY_PASS']
-TEAMSPEAK_QUERY_SERVER = config['Teamspeak']['TEAMSPEAK_QUERY_SERVER']
+telegram_api_token = config['Telegram']['telegram_api_token']
+teamspeak_query_user = config['Teamspeak']['teamspeak_query_user']
+teamspeak_query_pass = config['Teamspeak']['teamspeak_query_pass']
+teamspeak_query_server = config['Teamspeak']['teamspeak_query_server']
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -34,7 +35,7 @@ def start(bot, update):
     update.message.reply_text('Hi!')
 
 
-def help(bot, update):
+def telegram_help(bot, update):
     update.message.reply_text('Help!')
 
 
@@ -52,15 +53,15 @@ def inlinequery(bot, update):
     results.append(InlineQueryResultArticle(id=uuid4(),
                                             title="Get Clients",
                                             input_message_content=InputTextMessageContent(
-                                                teamspeakActions.getClients(TEAMSPEAK_QUERY_USER, TEAMSPEAK_QUERY_PASS,
-                                                                            TEAMSPEAK_QUERY_SERVER),
+                                                TeamspeakActions.get_clients(teamspeak_query_user, teamspeak_query_pass,
+                                                                             teamspeak_query_server),
                                                 parse_mode=ParseMode.MARKDOWN)))
 
     results.append(InlineQueryResultArticle(id=uuid4(),
                                             title="Get Banlist",
                                             input_message_content=InputTextMessageContent(
-                                                teamspeakActions.getBanlist(TEAMSPEAK_QUERY_USER, TEAMSPEAK_QUERY_PASS,
-                                                                            TEAMSPEAK_QUERY_SERVER),
+                                                TeamspeakActions.get_bans(teamspeak_query_user, teamspeak_query_pass,
+                                                                          teamspeak_query_server),
                                                 parse_mode=ParseMode.MARKDOWN)))
 
     results.append(InlineQueryResultArticle(id=uuid4(),
@@ -72,20 +73,20 @@ def inlinequery(bot, update):
     update.inline_query.answer(results, cache_time=0)
 
 
-def error(bot, update, error):
-    logger.warn('Update "%s" caused error "%s"' % (update, error))
+def error(bot, update, telegram_error):
+    logger.warning('Update "%s" caused telegram_error "%s"' % (update, telegram_error))
 
 
 def main():
     # Create the Updater and pass it your bot's token.
-    updater = Updater(TELEGRAM_API_TOKEN)
+    updater = Updater(telegram_api_token)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("telegram_help", telegram_help))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(InlineQueryHandler(inlinequery))
