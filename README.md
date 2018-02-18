@@ -9,8 +9,8 @@ A Teamspeak 3 bot for telegram
 ## Features
 - List all clients on server
 - List all active bans on server
-- Kick all client ;). This is a fake function it will only return a message.
+- Kick all clients ;). This is a fake function it will only return a message.
 
 ## Get started
 To get started clone the repo and copy the teamspeakBot.conf.example to teamspeakBot.conf and add your info.
-After that run main.py. Than you should be able to give your bot the start command and use all the functions.
+After that run main.py. Then you should be able to give your bot the start command and use all the functions.
